@@ -18,7 +18,7 @@ defineProps({
         <p class="text-slate-500">Цена</p>
         <b class="text-xl">{{ price }} ₽</b>
       </div>
-      <div class="flex items-center gap-3"><!-- Свернутые строки 27-69 --></div>
+      <div class="flex items-center gap-3"></div>
     </div>
   </div>
 </template>
