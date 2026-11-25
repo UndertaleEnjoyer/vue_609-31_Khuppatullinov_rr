@@ -1,13 +1,18 @@
-<script setup>
+﻿<script setup>
 import { onMounted, ref, computed, watch } from "vue";
 import axios from "axios";
-import VProduct from "./VProduct.vue";
-import SearchInput from "./SearchInput.vue";
-import SortSelect from "./SortSelect.vue";
+import ProductSkeletonLoader from '../components/ProductSkeletonLoader.vue';
+import VProduct from "../components/VProduct.vue";
+import SearchInput from "../components/SearchInput.vue";
+import SortSelect from "../components/SortSelect.vue";
 
 const items = ref([]);
+const loading = ref(true);
+const error = ref('');
 
 const fetchItems = async () => {
+  loading.value = true;
+  error.value = '';
   try {
     const { data } = await axios.get(
       "https://f36d291e28febbdd.mokky.dev/items",
@@ -18,7 +23,9 @@ const fetchItems = async () => {
       isAdded: false,
     }));
   } catch (e) {
-    console.log(e);
+    error.value = 'Не удалось загрузить каталог. Повторите попытку.';
+  } finally {
+    loading.value = false;
   }
 };
 
@@ -85,15 +92,16 @@ const filteredProducts = computed(() => {
         <sort-select v-model="sortBy" :options="sortOptions" />
       </div>
     </div>
-    <div class="grid grid-cols-5 gap-5">
+    <p v-if="error" role="alert">{{ error }} <button @click="fetchItems">Повторить</button></p>
+    <ProductSkeletonLoader v-if="loading" />
+    <div v-else class="product-grid">
       <v-product
         v-for="item in filteredProducts"
         :key="item.id"
-        :img-url="item.imageUrl"
-        :title="item.title"
-        :price="item.price.toLocaleString('ru-RU')"
+        :product="item"
       ></v-product>
-      <p v-if="filteredProducts.length === 0">Товары не найдены</p>
+      <p v-if="!error && filteredProducts.length === 0">Товары не найдены</p>
     </div>
   </main>
 </template>
+

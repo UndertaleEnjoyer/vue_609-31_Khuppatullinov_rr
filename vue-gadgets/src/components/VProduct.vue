@@ -1,24 +1,18 @@
-<script setup>
-defineProps({
-  imgUrl: String,
-  title: String,
-  price: String,
-});
+﻿<script setup>
+import { useCartStore } from '../stores/cart'
+import { useFavoritesStore } from '../stores/favorites'
+defineProps({ product: { type: Object, required: true } })
+const cart = useCartStore()
+const favorites = useFavoritesStore()
 </script>
 <template>
-  <div class="p-5 bg-slate-100 rounded-xl flex flex-col justify-between gap-2">
-    <div>
-      <img :src="imgUrl" alt="" class="mb-4" />
-      <h3 class="text-xl font-semibold">
-        {{ title }}
-      </h3>
+  <article class="product-card">
+    <img class="product-image" :src="product.imageUrl" :alt="product.title">
+    <h3>{{ product.title }}</h3>
+    <p class="muted">Цена</p><strong>{{ product.price.toLocaleString('ru-RU') }} ₽</strong>
+    <div class="actions">
+      <button :aria-label="favorites.has(product.id) ? 'Убрать из избранного' : 'В избранное'" :aria-pressed="favorites.has(product.id)" @click="favorites.toggle(product)">{{ favorites.has(product.id) ? '♥' : '♡' }}</button>
+      <button class="primary" @click="cart.add(product)">В корзину</button>
     </div>
-    <div class="flex items-center justify-between gap-2">
-      <div>
-        <p class="text-slate-500">Цена</p>
-        <b class="text-xl">{{ price }} ₽</b>
-      </div>
-      <div class="flex items-center gap-3"></div>
-    </div>
-  </div>
+  </article>
 </template>
